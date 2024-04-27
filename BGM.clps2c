@@ -1,0 +1,113 @@
+set BgmCodeCave 0x007cb2d0
+
+ASM_START 0x00109204 //Remove bitshift that limits max ADX number
+    nop
+ASM_END
+
+//Break ADX Limits
+ASM_START 0x00109218
+    addiu $a1, $gp, -0x7a48
+ASM_END
+ASM_START 0x0010921c
+    move $a2, $v1
+ASM_END
+ASM_START 0x002dce44
+    j 0x007cb2f8
+    move $a0, $v0
+ASM_END
+
+//Hook the battle function
+ASM_START 0x002dce3c
+    j 0x007cb2d0
+    nop
+ASM_END
+
+ASM_START BgmCodeCave
+    bne $v0, $zero, ProcessBattleBgm
+    nop
+    jal 0x0017d800
+    nop
+    j 0x002dce44
+    nop
+    ProcessBattleBgm: jal 0x001099d0
+    move $a0, $v0
+    j 0x002dce74
+    nop
+    //Check for special situations
+    lw $v0,-0x4904($gp) //battle info
+    lw $v1,0xc($v0)
+    lui $v0, 0x10
+    and $v0, $v1, $v0
+    beq $v0, $zero, GameCheckStart
+    nop
+
+    lw $v0, -0x4a0c($gp)
+    lw $v1, 0x3c($v0)
+    lui $v0, 0x3
+    addu $v0, $v1, $v0
+    lw $v0, 0x3310($v0)
+    bne $v0, $zero, GameCheckStart
+    nop
+    or $s2, $s2, 0x2
+    GameCheckStart: lb $a0, -0x4f41($gp)
+        and $a0, $a0, 0x2 //clear irrelevant bits
+        and $s2, $s2, $a0 //clear advantage if not enabled
+        lb $a0, -0x4d4c($gp)
+        or $s2, $s2, $a0
+        lb $a0, -0x4d41($gp)
+        not $a0, $a0 // invert share check
+        and $a0, $a0, 0x1 // clear extra bits
+        and $s3, $s2, $a0 // check if journey or check forced
+        bnez $s3, AnswerCheck
+        nop
+    JourneyCheckStart: lb $a0, -0x4d48($gp) //load journey bit field
+        or $s2, $s2, 0x1 //set first bit to 1
+        and $s3, $s2, 0x1 //check if both first bits are on
+        lb $s6, -0x4d45($gp) //load journey track count
+        beqz $s3, Randomize //branch if not
+        nop
+    JourneyCheck: addiu $s5, $zero, 0x1a //set track
+        addiu $s4, $zero, 0x3e8 //set track start to 1000
+        and $s3, $a0, 0x2 //check if advantage and enabled
+        beqz $s3, Randomize
+        nop
+    JourneyAdvCheck: lb $s6, -0x4d43($gp) //load journey advantage track count
+        addiu $s4, $zero, 0x2328 //set track start to 9000
+        addiu $s5, $zero, 0xe //set track
+        b Randomize
+        nop
+    AnswerCheckStart: lb $a0, -0x4d47($gp) //load answer bit field
+        lb $s6, -0x4d44($gp) //load answer track count
+        and $s3, $a0, 0x1 //check if both first bits are on
+        beqz $s3, Randomize
+        nop
+    AnswerCheck: addiu $s5, $zero, 0x6a //set track
+        addiu $s4, $zero, 0x1f48 //set track start to 8000
+        and $s3, $a0, 0x2 //check if advantage and enabled
+        beqz $s3, Randomize
+        nop
+    AnswerAdvantageCheck: lb $s6, -0x4d42($gp) //load answer advantage track count
+        addiu $s4, $zero, 0x2710 //set track start to 10000
+        addiu $s5, $zero, 0xd //set track
+        beqz $s4, LoadOriginal
+        nop
+    Randomize: jal 0x001099D0 //rnd
+        nop
+        divu $v0, $s6
+        mfhi $a0
+        addu $a0, $a0, $s4
+        b LoadRandom
+        nop
+
+    // Play Music
+    LoadOriginal: addu $a0, $zero, $s5
+    LoadRandom: addu $s2, $zero, $zero
+        addu $s3, $zero, $zero
+        addu $s4, $zero, $zero
+        addu $s5, $zero, $zero
+        addu $s6, $zero, $zero
+        jal 0x001099D0
+        nop
+        j 0x002dce74
+        nop
+ASM_END

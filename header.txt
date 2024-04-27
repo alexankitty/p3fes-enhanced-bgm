@@ -1,0 +1,4 @@
+gametitle=Persona 3 FES [SLUS_216.21] [94A82AAA]
+comment=Enhanced BGM by Tupelov, Reworked by Alexankitty
+author= Tupelov, Alexankitty
+version=4
