@@ -124,7 +124,7 @@ ASM_START BgmCodeCave
         addiu $s5, $zero, 0xd //set track
         b Randomize
         nop
-    Randomize: jal 0x001099D0 //rnd
+    Randomize: jal 0x00488F30 //rnd
         nop
         divu $v0, $s6
         mfhi $a0
