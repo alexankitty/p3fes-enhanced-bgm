@@ -47,7 +47,7 @@ ASM_START BgmCodeCave
     lw $v0, -0x4a0c($gp)
     lw $v1, 0x3c($v0)
     lui $v0, 0x3
-    and $v0, $v1, $v0
+    addu $v0, $v1, $v0
     lw $v0, 0x3310($v0)
     bne $v0, $zero, GameCheckStart
     nop
@@ -59,13 +59,12 @@ ASM_START BgmCodeCave
     //JourneyAdvBgmCount  0x4d44
     //AnswerBgmCount      0x4d43
     //AnswerAdvBgmCount   0x4d42
-    GameCheckStart: lb $a0, -0x4d42($gp)
-        and $a0, $a0, 0x2 //clear irrelevant bits
-        and $s2, $s2, $a0 //clear advantage if not enabled
+    GameCheckStart: lb $s3, -0x4d46($gp) // get options
+        and $a0, $s3, 0x2 //clear irrelevant bits
+        and $s2, $s3, $a0 //clear advantage if not enabled
         lb $a0, -0x4d4c($gp) // get answer bit
         or $s2, $s2, $a0
-        lb $a0, -0x4d46($gp) // get options
-        not $a0, $a0 // invert share check
+        not $a0, $s3 // invert share check
         and $a0, $a0, 0x1 // clear extra bits
         and $a0, $s2, $a0 //clear the bottom bit unless sharing disabled
         or $s3, $s2, $a0 //or it back into the result
