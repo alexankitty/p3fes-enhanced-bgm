@@ -1,11 +1,11 @@
 //Constants
 set JourneyBgmBitfield 0x007cdfa8
 set AnswerBgmBitfield 0x007cdfa9
+set BgmOptionsAddr 0x007cdfaa
 set JourneyBgmCountAddr 0x007cdfab
 set JourneyAdvBgmCountAddr 0x007cdfac
 set AnswerBgmCountAddr 0x007cdfad
 set AnswerAdvBgmCountAddr 0x007cdfae
-set BgmOptionsAddr 0x007cdfaa
 set GlobalPointer 0x007d2cf0
 set AdxStringFormatAddr 0x007CB540
 set BgmStringFormatAddr 0x007CB2A8 
@@ -13,11 +13,11 @@ set BgmStringFormatAddr 0x007CB2A8
 //store values in GP
 WB JourneyBgmBitfield "01" // Use random bgm bitfield bit 1 = journey, bit 2 = answer -0x4d48(gp) set to 3 for both
 WB AnswerBgmBitfield "01" // bit 1 = answer, bit 2 = answer advantage. -0x4d47(gp) set to 3 for both
-WB JourneyBgmCountAddr "15" // must be greater than 0, starts at 1000.adx -0x4d46(gp)
-WB JourneyAdvBgmCountAddr "15" //must be greater than 0, starts at 8000.adx -0x4d45(gp)
-WB AnswerBgmCountAddr "15" //must be greater than 0, starts at 9000.adx -0x4d44(gp)
-WB AnswerAdvBgmCountAddr "15"//must be greater than 0, starts at 10000.adx -0x4d43(gp)
-WB BgmOptionsAddr "02" // options 1 = shared bgm, 2 = advantage theme, 3 = both ; Advantage theme is 15 for journey and 14 for answer -0x4d42(gp)
+WB BgmOptionsAddr "02" // options 1 = shared bgm, 2 = advantage theme, 3 = both ; Advantage theme is 15 for journey and 14 for answer -0x4d46(gp)
+WB JourneyBgmCountAddr "15" // must be greater than 0, starts at 1000.adx -0x4d45(gp)
+WB JourneyAdvBgmCountAddr "15" //must be greater than 0, starts at 8000.adx -0x4d44(gp)
+WB AnswerBgmCountAddr "15" //must be greater than 0, starts at 9000.adx -0x4d43(gp)
+WB AnswerAdvBgmCountAddr "15"//must be greater than 0, starts at 10000.adx -0x4d42(gp)
 
 //Store Strings
 WS AdxStringFormatAddr "%d.ADX"
